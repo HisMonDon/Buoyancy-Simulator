@@ -71,6 +71,10 @@ int main() {
     text.setStyle(sf::Text::Bold);
     text.setFillColor(sf::Color::Red);
     text.setPosition({10, 10});
+    sf::Text constantText(arial, ("Fluid Density: 1.0 g/mL"));
+    constantText.setStyle(sf::Text::Bold);
+    constantText.setFillColor(sf::Color::Cyan);
+    constantText.setPosition({float(width) - 450, 10});
 
     //////////////////////////////////////////////////////////////////
     while (window.isOpen()) {
@@ -110,7 +114,7 @@ int main() {
 
         if (bally + 2*ballradius < waterline) {
             text.setString("Submerged area: " + to_string(0) +
-                           "\nBall Y: " + to_string(int(bally)) +
+                           "\nBall Y: " + to_string(height - int(bally)) +
                            "\nBuoyant Force: " + to_string(buoyancyForce)+ " N"
                            "\nNet Force: "+ to_string(int(netForce)) + " N");
 
@@ -120,7 +124,7 @@ int main() {
         } else if (bally > waterline) {
             submergedArea = (M_PI*pow(ballradius, 2))/100;
             text.setString("Submerged area: " + to_string(submergedArea) +
-                           "\nBall Y: " + to_string(int(bally)) +
+                           "\nBall Y: " + to_string(height - int(bally)) +
                            "\nBuoyant Force: " + to_string(buoyancyForce) + " N"+
                            "\nNet Force: "+ to_string(int(netForce)) +" N");
 
@@ -130,11 +134,12 @@ int main() {
                 submergedArea = (ballarea - (ballarea - integratecircle(ballradius, waterline - bally)))/100;
             }
             text.setString("Submerged area: " + to_string(submergedArea) +
-                           "\nBall Y: " + to_string(int(bally)) +
+                           "\nBall Y: " + to_string(height - int(bally)) +
                            "\nBuoyant Force: " + to_string(buoyancyForce)+ " N" +
                            "\nNet Force: "+ to_string(int(netForce)) +" N");
 
         }
+
         buoyancyForce = abs(densitywater*submergedArea*gravity);
 
         if (auto event = window.pollEvent()) {
@@ -175,6 +180,7 @@ int main() {
         ball.setPosition({ballx, bally});
         window.draw(ball);
         window.draw(text);
+        window.draw(constantText);
         window.display();
     }
     }
