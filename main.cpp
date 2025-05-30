@@ -62,10 +62,18 @@ int main() {
     sf::CircleShape ball(ballradius);
     ball.setFillColor(sf::Color::Red);
     ball.setPosition({ballx, bally});
-
+    //Draw shapes
+    sf::RectangleShape increaseDensity({float(40), float(40)});
+    sf::RectangleShape decreaseDensity({float(40), float(40)});
     sf::RectangleShape water({float(1500), float(600)});
     water.setFillColor(sf::Color::Blue);
     water.setPosition({0.0, float(waterline)});
+    increaseDensity.setFillColor(sf::Color::Cyan);
+    decreaseDensity.setFillColor(sf::Color::Cyan);
+    increaseDensity.setPosition({float(width)- 90, 10});
+    decreaseDensity.setPosition({float(width) - 530, 10});
+    //////////////////////
+
     sf::Text text(arial, to_string(getareaofcircle(ballradius, ybelow(bally, waterline))));
     text.setCharacterSize(30);
     text.setStyle(sf::Text::Bold);
@@ -181,6 +189,8 @@ int main() {
         window.draw(ball);
         window.draw(text);
         window.draw(constantText);
+        window.draw(increaseDensity);
+        window.draw(decreaseDensity);
         window.display();
     }
     }
