@@ -48,6 +48,11 @@ int main() {
     float ballvelocityy = 0;
     float friction = 25;
     int tickcounter = 0;
+    bool ismoving = true;
+    bool ismoving2 = true;
+    bool ismoving3 = true;
+    bool ismovingoverall = true;
+    int counter = 0;
 
 
     bool dragging = false;
@@ -74,18 +79,39 @@ int main() {
                     ballx = mouse_pos.x - ballradius;
                     bally = mouse_pos.y - ballradius;
                     ball.setPosition({mouse_pos.x - ballradius, mouse_pos.y - ballradius}); */
-
+        counter ++;
         netForce = buoyancyForce + forceGravity;
         ballvelocityy += netForce/10;
         if (abs(netForce) < 80) {
             netForce = 0;
             buoyancyForce = forceGravity;
+            if (ismoving) {
+                ismoving = false;
+                cout<<"ismoving"<<counter<<endl;
+            } else if (not ismoving && ismoving2 && counter == 2) {
+                ismoving2 = false;
+                cout<<"ismoving2"<<endl;
+            } else if (not ismoving2 && ismoving3 && counter <= 3) {
+                ismoving3 = false;
+                cout<<"ismoving3"<<endl;
+            } else if (not ismoving3 && counter >=4) {
+                ismovingoverall = false;
+                submergedArea = (buoyancyForce/densitywater)/gravity;
+                cout <<"not moving"<<endl;
+                counter = 20;
+            } else {
+                counter = 0;
+                ismoving = true;
+                ismoving2 = true;
+                ismoving3 = true;
+
+            }
         }
 
         if (bally + 2*ballradius < waterline) {
             text.setString("Submerged area: " + to_string(0) +
                            "\nBall Y: " + to_string(int(bally)) +
-                           "\nBuoyant Force: " + to_string(buoyancyForce)+
+                           "\nBuoyant Force: " + to_string(buoyancyForce)+ " N"
                            "\nNet Force: "+ to_string(int(netForce)) + " N");
 
 
@@ -95,15 +121,17 @@ int main() {
             submergedArea = (M_PI*pow(ballradius, 2))/100;
             text.setString("Submerged area: " + to_string(submergedArea) +
                            "\nBall Y: " + to_string(int(bally)) +
-                           "\nBuoyant Force: " + to_string(buoyancyForce) +
+                           "\nBuoyant Force: " + to_string(buoyancyForce) + " N"+
                            "\nNet Force: "+ to_string(int(netForce)) +" N");
 
 
         } else {
-            submergedArea = (ballarea - (ballarea - integratecircle(ballradius, waterline - bally)))/100;
+            if (ismovingoverall) {
+                submergedArea = (ballarea - (ballarea - integratecircle(ballradius, waterline - bally)))/100;
+            }
             text.setString("Submerged area: " + to_string(submergedArea) +
                            "\nBall Y: " + to_string(int(bally)) +
-                           "\nBuoyant Force: " + to_string(buoyancyForce)+
+                           "\nBuoyant Force: " + to_string(buoyancyForce)+ " N" +
                            "\nNet Force: "+ to_string(int(netForce)) +" N");
 
         }
@@ -119,13 +147,17 @@ int main() {
 
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::S))
         {
-            bally += 0.5;
+            bally += 4;
             ballvelocityy = 0;
+            ismovingoverall = true;
+            counter = 0;
         }
         else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::W))
         {
-            bally -=0.5;
+            bally -=4;
             ballvelocityy = 0;
+            ismovingoverall = true;
+            counter = 0;
         }
         else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::A))
         {
@@ -146,6 +178,3 @@ int main() {
         window.display();
     }
     }
-
-
-
