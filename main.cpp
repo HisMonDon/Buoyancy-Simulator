@@ -38,13 +38,15 @@ int main() {
     int waterline = 500;
     float waterx = 300.f;
     float watery = 0.f;
-    float densitywater = 1.5;
+    float densitywater = 2.0;
     float gravity = -9.81;
     float forceGravity = gravity * ballmass;
     float buoyancyForce = 0;
     float submergedArea;
     float ballarea = M_PI*pow(ballradius, 2);
     float netForce = gravity;
+    float ballvelocityy = 0;
+    int tickcounter = 0;
 
     bool dragging = false;
     ///////////////////////////////////////////////////////////////
@@ -70,6 +72,12 @@ int main() {
                     ballx = mouse_pos.x - ballradius;
                     bally = mouse_pos.y - ballradius;
                     ball.setPosition({mouse_pos.x - ballradius, mouse_pos.y - ballradius}); */
+        tickcounter++;
+        if (tickcounter >= 5) {
+            ballvelocityy += netForce/50;
+            tickcounter = 0;
+        }
+
         netForce = buoyancyForce + forceGravity;
         if (bally + 2*ballradius < waterline) {
             text.setString("Submerged area: " + to_string(0) +
@@ -118,7 +126,7 @@ int main() {
         {
             cout<<getareaofcircle(ballradius, ybelow(bally, waterline))<<endl;
         }
-        else{bally -= netForce/1000;}
+        else{bally -= ballvelocityy/1000;}
         window.clear();
         window.draw(water);
         ball.setPosition({ballx, bally});
