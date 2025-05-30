@@ -46,12 +46,14 @@ int main() {
     float ballarea = M_PI*pow(ballradius, 2);
     float netForce = gravity;
     float ballvelocityy = 0;
+    float friction = 25;
     int tickcounter = 0;
+
 
     bool dragging = false;
     ///////////////////////////////////////////////////////////////
     sf::RenderWindow window(sf::VideoMode({width, height}), "Buoyancy simulator");
-
+    window.setFramerateLimit(80);
     sf::CircleShape ball(ballradius);
     ball.setFillColor(sf::Color::Red);
     ball.setPosition({ballx, bally});
@@ -72,13 +74,14 @@ int main() {
                     ballx = mouse_pos.x - ballradius;
                     bally = mouse_pos.y - ballradius;
                     ball.setPosition({mouse_pos.x - ballradius, mouse_pos.y - ballradius}); */
-        tickcounter++;
-        if (tickcounter >= 5) {
-            ballvelocityy += netForce/50;
-            tickcounter = 0;
-        }
 
         netForce = buoyancyForce + forceGravity;
+        ballvelocityy += netForce/10;
+        if (abs(netForce) < 80) {
+            netForce = 0;
+            buoyancyForce = forceGravity;
+        }
+
         if (bally + 2*ballradius < waterline) {
             text.setString("Submerged area: " + to_string(0) +
                            "\nBall Y: " + to_string(int(bally)) +
@@ -117,16 +120,24 @@ int main() {
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::S))
         {
             bally += 0.5;
+            ballvelocityy = 0;
         }
         else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::W))
         {
             bally -=0.5;
+            ballvelocityy = 0;
         }
         else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::A))
         {
             cout<<getareaofcircle(ballradius, ybelow(bally, waterline))<<endl;
+            ballvelocityy = 0;
+        } else{bally -= ballvelocityy/1000;}
+        if (ballvelocityy > 0) {
+            ballvelocityy -= friction;
+        } else {
+            ballvelocityy += friction;
         }
-        else{bally -= ballvelocityy/1000;}
+
         window.clear();
         window.draw(water);
         ball.setPosition({ballx, bally});
