@@ -2,6 +2,8 @@
 #include <SFML/Graphics.hpp>
 #include <cmath>
 #include <string>
+#include <iomanip>
+#include <sstream>
 //#include<imgui.h>
 //#include <imgui-sfml/imgui-SFML.h>
 using namespace std;
@@ -73,8 +75,8 @@ int main() {
     water.setPosition({0.0, float(waterline)});
     increaseDensity.setFillColor(sf::Color::Cyan);
     decreaseDensity.setFillColor(sf::Color::Cyan);
-    increaseDensity.setPosition({float(width)- 90, 10});
-    decreaseDensity.setPosition({float(width) - 530, 10});
+    increaseDensity.setPosition({float(width) - 70, 10});
+    decreaseDensity.setPosition({float(width) - 500, 10});
     //////////////////////
 
     sf::Text text(arial, to_string(getareaofcircle(ballradius, ybelow(bally, waterline))));
@@ -85,7 +87,7 @@ int main() {
     sf::Text constantText(arial, ("Fluid Density: 1.0 g/mL"));
     constantText.setStyle(sf::Text::Bold);
     constantText.setFillColor(sf::Color::Cyan);
-    constantText.setPosition({float(width) - 450, 10});
+    constantText.setPosition({float(width) - 435, 10});
 
     //////////////////////////////////////////////////////////////////
     while (window.isOpen()) {
@@ -221,9 +223,20 @@ int main() {
         } else {
             ballvelocityy += friction;
         }
-        constantText.setString("Fluid Density: " + to_string(round_up(double(densitywater))) + " g/mL");
-        /////////////////////////////////////////////////////////////////////////////////////////////
 
+        std::ostringstream densityStream;
+        densityStream << std::fixed << std::setprecision(2) << densitywater;
+        constantText.setString("Fluid Density: " + densityStream.str() + " g/mL");
+        /////////////////////////////////////////////////////////////////////////////////////////////
+        //physical and game barriars to prevent breaking the laws of physics
+        if (densitywater < 0.1) {
+            densitywater = 0.1;
+        } else if (densitywater > 5.0) {
+            densitywater = 5.0;
+        }
+        if (bally > height) {
+            bally = height;
+        }
         //Drawings
         window.clear();
         window.draw(water);
