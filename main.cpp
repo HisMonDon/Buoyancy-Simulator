@@ -13,6 +13,9 @@ float ybelow(float bally, float waterline) {
     }
     return 0.0;
 }
+double round_up(double value, int decimal_places) {
+    
+}
 
 float integratecircle(float r, float h) {
     return(pow(r,2)*acos((h-r)/r)+ (r - h)*sqrt(2*h*r - pow(h, 2)));
@@ -53,7 +56,7 @@ int main() {
     bool ismoving3 = true;
     bool ismovingoverall = true;
     int counter = 0;
-
+    bool isMousePressed = False;
 
     bool dragging = false;
     ///////////////////////////////////////////////////////////////
@@ -162,15 +165,34 @@ int main() {
         float dincreasey1 = increaseDensity.getPosition().y;
         float dincreasex2 = increaseDensity.getSize().x;
         float dincreasey2 = increaseDensity.getSize().x;
-        if ((mouse_x >= dincreasex1) and (mouse_x <= dincreasex2) and
-            (mouse_y >= dincreasey1) and (mouse_y <= dincreasey2)) {
-            increaseDensity.setFillColor(sf::Color::Blue);
-            cout<<"blue!"<<endl;
+        if ((mouse_x >= dincreasex1) and (mouse_x <= dincreasex1 + dincreasex2) and
+            (mouse_y >= dincreasey1) and (mouse_y <= dincreasey2 + dincreasey1)) {
+            if (sf::Mouse::isButtonPressed(sf::Mouse::Button::Left)) {
+                densitywater += 0.1;
+                increaseDensity.setFillColor(sf::Color(252, 4, 4));
+            } else {
+                increaseDensity.setFillColor(sf::Color(252, 240, 4));
+            }
         } else {
             increaseDensity.setFillColor(sf::Color::Cyan);
         }
-        if (sf::Mouse::isButtonPressed(sf::Mouse::Button::Left) && mouseposition.x > width-90 && mouseposition.x > width-50 && mouseposition.y > 10 && mouseposition.y < 50) {
-            cout<<"clicked"<<endl;
+        float ddecreasex1 = decreaseDensity.getPosition().x;
+        float ddecreasey1 = decreaseDensity.getPosition().y;
+        float ddecreasex2 = decreaseDensity.getSize().x;
+        float ddecreasey2 = decreaseDensity.getSize().x;
+        if ((mouse_x >= ddecreasex1) and (mouse_x <= ddecreasex1 + ddecreasex2) and
+            (mouse_y >= ddecreasey1) and (mouse_y <= ddecreasey2 + ddecreasey1)) {
+            if (sf::Mouse::isButtonPressed(sf::Mouse::Button::Left)) {
+                decreaseDensity.setFillColor(sf::Color(252, 4, 4));
+                densitywater -= 0.1;
+            } else {
+                decreaseDensity.setFillColor(sf::Color(252, 240, 4));
+            }
+        } else {
+            decreaseDensity.setFillColor(sf::Color::Cyan);
+        }
+        if (sf::Mouse::isButtonPressed(sf::Mouse::Button::Right)) {
+            cout<<"X position: " <<mouse_x<< ", Y Position: "<<mouse_y<<endl;
         }
         /*else if (sf::Mouse::isButtonPressed(sf::Mouse::Button::Left)){
             cout<<"not clicked"<<endl;
@@ -199,6 +221,7 @@ int main() {
         } else {
             ballvelocityy += friction;
         }
+        constantText.setString("Fluid Density: " + to_string(densitywater) + " g/mL");
         /////////////////////////////////////////////////////////////////////////////////////////////
 
         //Drawings
@@ -214,4 +237,5 @@ int main() {
 
         /////////////////////////////////////////////////////////////////////////////////////////////
     }
+    return 0;
 }
