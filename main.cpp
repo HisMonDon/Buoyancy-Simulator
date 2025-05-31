@@ -1,11 +1,11 @@
+//Made by Chenyu Lu
 #include <iostream>
 #include <SFML/Graphics.hpp>
 #include <cmath>
 #include <string>
 #include <iomanip>
 #include <sstream>
-//#include<imgui.h>
-//#include <imgui-sfml/imgui-SFML.h>
+
 using namespace std;
 
 sf::Font arial("arial.ttf");
@@ -15,6 +15,7 @@ float ybelow(float bally, float waterline) {
     }
     return 0.0;
 }
+
 double round_up(double value) {
     return("%2f", value);
 }
