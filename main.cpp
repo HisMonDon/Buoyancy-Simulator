@@ -55,6 +55,7 @@ int main() {
     float friction = 25;
     int counter = 0;
     bool isMousePressed = false;
+    sf::Vector2i offset;
 
     bool dragging = false;
     ///////////////////////////////////////////////////////////////
@@ -135,32 +136,56 @@ int main() {
         float dincreasey1 = increaseDensity.getPosition().y;
         float dincreasex2 = increaseDensity.getSize().x;
         float dincreasey2 = increaseDensity.getSize().x;
-        if ((mouse_x >= dincreasex1) and (mouse_x <= dincreasex1 + dincreasex2) and
-            (mouse_y >= dincreasey1) and (mouse_y <= dincreasey2 + dincreasey1)) {
-            if (sf::Mouse::isButtonPressed(sf::Mouse::Button::Left)) {
-                densitywater += 0.1;
-                increaseDensity.setFillColor(sf::Color(252, 4, 4));
-            } else {
-                increaseDensity.setFillColor(sf::Color(252, 240, 4));
-            }
-            } else {
-                increaseDensity.setFillColor(sf::Color::Cyan);
-            }
         float ddecreasex1 = decreaseDensity.getPosition().x;
         float ddecreasey1 = decreaseDensity.getPosition().y;
         float ddecreasex2 = decreaseDensity.getSize().x;
         float ddecreasey2 = decreaseDensity.getSize().x;
+        //increase
+        ////
+        if ((mouse_x >= dincreasex1) and (mouse_x <= dincreasex1 + dincreasex2) and
+            (mouse_y >= dincreasey1) and (mouse_y <= dincreasey2 + dincreasey1)) {
+            if (sf::Mouse::isButtonPressed(sf::Mouse::Button::Left)) {
+                {
+                    if (not isMousePressed) {
+                        densitywater += 0.1;
+                        increaseDensity.setFillColor(sf::Color(252, 4, 4));
+                        netForce = 0;
+                        isMousePressed = true;
+                    } else {
+                        isMousePressed = true;
+                    }
+                }
+
+            } else {
+                increaseDensity.setFillColor(sf::Color(252, 240, 4));
+                isMousePressed = false;
+            }
+        } else {
+            increaseDensity.setFillColor(sf::Color::Cyan);
+            isMousePressed = false;
+        }
+        //Decrease
         if ((mouse_x >= ddecreasex1) and (mouse_x <= ddecreasex1 + ddecreasex2) and
             (mouse_y >= ddecreasey1) and (mouse_y <= ddecreasey2 + ddecreasey1)) {
-            if (sf::Mouse::isButtonPressed(sf::Mouse::Button::Left)) {
-                decreaseDensity.setFillColor(sf::Color(252, 4, 4));
-                densitywater -= 0.1;
+            if (sf::Mouse::isButtonPressed(sf::Mouse::Button::Left)){
+                    if (not isMousePressed) {
+                        densitywater -= 0.1;
+                        decreaseDensity.setFillColor(sf::Color(252, 4, 4));
+                        netForce = 0;
+                        isMousePressed = true;
+                    } else {
+                        isMousePressed = true;
+                    }
             } else {
                 decreaseDensity.setFillColor(sf::Color(252, 240, 4));
+                isMousePressed = false;
             }
-            } else {
-                decreaseDensity.setFillColor(sf::Color::Cyan);
-            }
+        } else {
+            decreaseDensity.setFillColor(sf::Color::Cyan);
+            isMousePressed = false;
+        }
+
+        // Print mouse position
         if (sf::Mouse::isButtonPressed(sf::Mouse::Button::Right)) {
             cout<<"X position: " <<mouse_x<< ", Y Position: "<<mouse_y<<endl;
         }
@@ -227,4 +252,3 @@ int main() {
         /////////////////////////////////////////////////////////////////////////////////////////////
     }
 }
-
