@@ -30,6 +30,7 @@ float getareaofcircle (float radius, float ybelow) {
     //integrate (y = root(900-x^2)) -> i got -1/3 *(r^2 - x^2)^3/2
     return integratecircle(radius, x2) - integratecircle(radius, x1);
 }
+
 int main() {
     //Variables
     unsigned int width = 1400;
@@ -83,7 +84,6 @@ int main() {
     constantText.setStyle(sf::Text::Bold);
     constantText.setFillColor(sf::Color::Cyan);
     constantText.setPosition({float(width) - 435, 10});
-
     //////////////////////////////////////////////////////////////////
     while (window.isOpen()) {
 
@@ -163,6 +163,15 @@ int main() {
             }
         if (sf::Mouse::isButtonPressed(sf::Mouse::Button::Right)) {
             cout<<"X position: " <<mouse_x<< ", Y Position: "<<mouse_y<<endl;
+        }
+        if (sf::Mouse::isButtonPressed(sf::Mouse::Button::Left) && mouse_x < ballx + ballradius && mouse_x > ballx - ballradius
+            && mouse_y < ballx + ballradius && mouse_y > bally - ballradius) {
+            ballx = mouse_x;
+            bally = mouse_y;
+            ball.setPosition({mouse_x, mouse_y});
+            ball.setFillColor(sf::Color::Yellow);
+        } else {
+            ball.setFillColor(sf::Color::Red);
         }
         /*else if (sf::Mouse::isButtonPressed(sf::Mouse::Button::Left)){
             cout<<"not clicked"<<endl;
