@@ -52,11 +52,6 @@ int main() {
     float netForce = gravity;
     float ballvelocityy = 0;
     float friction = 25;
-    int tickcounter = 0;
-    bool ismoving = true;
-    bool ismoving2 = true;
-    bool ismoving3 = true;
-    bool ismovingoverall = true;
     int counter = 0;
     bool isMousePressed = false;
 
@@ -95,31 +90,7 @@ int main() {
         counter ++;
         netForce = buoyancyForce + forceGravity;
         ballvelocityy += netForce/10;
-        if (abs(netForce) < 80) {
-            netForce = 0;
-            buoyancyForce = forceGravity;
-            if (ismoving) {
-                ismoving = false;
-                //cout<<"ismoving"<<counter<<endl;
-            } else if (not ismoving && ismoving2 && counter == 2) {
-                ismoving2 = false;
-                //cout<<"ismoving2"<<endl;
-            } else if (not ismoving2 && ismoving3 && counter <= 3) {
-                ismoving3 = false;
-                //cout<<"ismoving3"<<endl;
-            } else if (not ismoving3 && counter >=4) {
-                ismovingoverall = false;
-                submergedArea = (buoyancyForce/densitywater)/gravity;
-               // cout <<"not moving"<<endl;
-                counter = 20;
-            } else {
-                counter = 0;
-                ismoving = true;
-                ismoving2 = true;
-                ismoving3 = true;
 
-            }
-        }
 
         if (bally + 2*ballradius < waterline) {
             text.setString("Submerged area: " + to_string(0) +
@@ -129,7 +100,6 @@ int main() {
 
 
             submergedArea = 0;
-
         } else if (bally > waterline) {
             submergedArea = (M_PI*pow(ballradius, 2))/100;
             text.setString("Submerged area: " + to_string(submergedArea) +
@@ -139,9 +109,7 @@ int main() {
 
 
         } else {
-            if (ismovingoverall) {
-                submergedArea = (ballarea - (ballarea - integratecircle(ballradius, waterline - bally)))/100;
-            }
+            submergedArea = (ballarea - (ballarea - integratecircle(ballradius, waterline - bally)))/100;
             text.setString("Submerged area: " + to_string(submergedArea) +
                            "\nBall Y: " + to_string(height - int(bally)) +
                            "\nBuoyant Force: " + to_string(buoyancyForce)+ " N" +
@@ -150,8 +118,8 @@ int main() {
         }
 
         buoyancyForce = abs(densitywater*submergedArea*gravity);
-//MAIN GAME CONTROL (Mouse button pressed, buttons, e.t.c)
-/////////////////////////////////////////////////////////////////////////////////////////////
+        //MAIN GAME CONTROL (Mouse button pressed, buttons, e.t.c)
+        /////////////////////////////////////////////////////////////////////////////////////////////
 
         if (auto event = window.pollEvent()) {
             if (event-> is<sf::Event::Closed>()) {
@@ -175,9 +143,9 @@ int main() {
             } else {
                 increaseDensity.setFillColor(sf::Color(252, 240, 4));
             }
-        } else {
-            increaseDensity.setFillColor(sf::Color::Cyan);
-        }
+            } else {
+                increaseDensity.setFillColor(sf::Color::Cyan);
+            }
         float ddecreasex1 = decreaseDensity.getPosition().x;
         float ddecreasey1 = decreaseDensity.getPosition().y;
         float ddecreasex2 = decreaseDensity.getSize().x;
@@ -190,9 +158,9 @@ int main() {
             } else {
                 decreaseDensity.setFillColor(sf::Color(252, 240, 4));
             }
-        } else {
-            decreaseDensity.setFillColor(sf::Color::Cyan);
-        }
+            } else {
+                decreaseDensity.setFillColor(sf::Color::Cyan);
+            }
         if (sf::Mouse::isButtonPressed(sf::Mouse::Button::Right)) {
             cout<<"X position: " <<mouse_x<< ", Y Position: "<<mouse_y<<endl;
         }
@@ -203,14 +171,12 @@ int main() {
         {
             bally += 4;
             ballvelocityy = 0;
-            ismovingoverall = true;
             counter = 0;
         }
         else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::W))
         {
             bally -=4;
             ballvelocityy = 0;
-            ismovingoverall = true;
             counter = 0;
         }
         else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::A))
@@ -228,7 +194,7 @@ int main() {
         densityStream << std::fixed << std::setprecision(2) << densitywater;
         constantText.setString("Fluid Density: " + densityStream.str() + " g/mL");
         /////////////////////////////////////////////////////////////////////////////////////////////
-        //physical and game barriars to prevent breaking the laws of physics
+        //physical and game barriers to prevent breaking the laws of physics
         if (densitywater < 0.1) {
             densitywater = 0.1;
         } else if (densitywater > 5.0) {
@@ -250,5 +216,5 @@ int main() {
 
         /////////////////////////////////////////////////////////////////////////////////////////////
     }
-    return 0;
 }
+
