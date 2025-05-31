@@ -33,7 +33,7 @@ float getareaofcircle (float radius, float ybelow) {
 int main() {
     //Variables
     unsigned int width = 1400;
-    unsigned int height = 960;
+    unsigned int height = 800;
     //int x = 0;
     float ballx = width/2 - 70;
     float bally = 200;
@@ -200,8 +200,9 @@ int main() {
         } else if (densitywater > 5.0) {
             densitywater = 5.0;
         }
-        if (bally > height) {
-            bally = height;
+        if (bally + 2*ballradius > height) {
+            bally = height - 2*ballradius;
+            cout<<"dam"<<endl;
         }
         //Drawings
         window.clear();
