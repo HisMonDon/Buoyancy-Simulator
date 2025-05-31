@@ -13,8 +13,8 @@ float ybelow(float bally, float waterline) {
     }
     return 0.0;
 }
-double round_up(double value, int decimal_places) {
-    
+double round_up(double value) {
+    return("%2f", value);
 }
 
 float integratecircle(float r, float h) {
@@ -56,7 +56,7 @@ int main() {
     bool ismoving3 = true;
     bool ismovingoverall = true;
     int counter = 0;
-    bool isMousePressed = False;
+    bool isMousePressed = false;
 
     bool dragging = false;
     ///////////////////////////////////////////////////////////////
@@ -221,7 +221,7 @@ int main() {
         } else {
             ballvelocityy += friction;
         }
-        constantText.setString("Fluid Density: " + to_string(densitywater) + " g/mL");
+        constantText.setString("Fluid Density: " + to_string(round_up(double(densitywater))) + " g/mL");
         /////////////////////////////////////////////////////////////////////////////////////////////
 
         //Drawings
