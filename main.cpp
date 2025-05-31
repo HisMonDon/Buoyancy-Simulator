@@ -86,11 +86,7 @@ int main() {
 
     //////////////////////////////////////////////////////////////////
     while (window.isOpen()) {
-        /*        sf::Vector2i mouse_pos = sf::Mouse::getPosition(window);
-                if (sf::Mouse::isButtonPressed(sf::Mouse::Button::Left)) {
-                    ballx = mouse_pos.x - ballradius;
-                    bally = mouse_pos.y - ballradius;
-                    ball.setPosition({mouse_pos.x - ballradius, mouse_pos.y - ballradius}); */
+
         counter ++;
         netForce = buoyancyForce + forceGravity;
         ballvelocityy += netForce/10;
@@ -99,17 +95,17 @@ int main() {
             buoyancyForce = forceGravity;
             if (ismoving) {
                 ismoving = false;
-                cout<<"ismoving"<<counter<<endl;
+                //cout<<"ismoving"<<counter<<endl;
             } else if (not ismoving && ismoving2 && counter == 2) {
                 ismoving2 = false;
-                cout<<"ismoving2"<<endl;
+                //cout<<"ismoving2"<<endl;
             } else if (not ismoving2 && ismoving3 && counter <= 3) {
                 ismoving3 = false;
-                cout<<"ismoving3"<<endl;
+                //cout<<"ismoving3"<<endl;
             } else if (not ismoving3 && counter >=4) {
                 ismovingoverall = false;
                 submergedArea = (buoyancyForce/densitywater)/gravity;
-                cout <<"not moving"<<endl;
+               // cout <<"not moving"<<endl;
                 counter = 20;
             } else {
                 counter = 0;
@@ -149,8 +145,9 @@ int main() {
         }
 
         buoyancyForce = abs(densitywater*submergedArea*gravity);
-//MAIN GAME CONTROL
+//MAIN GAME CONTROL (Mouse button pressed, buttons, e.t.c)
 /////////////////////////////////////////////////////////////////////////////////////////////
+
         if (auto event = window.pollEvent()) {
             if (event-> is<sf::Event::Closed>()) {
                 window.close();
@@ -158,7 +155,26 @@ int main() {
             //std::cout<<x<<endl;
             //x++;
         }
-
+        sf::Vector2i mouseposition = sf::Mouse::getPosition(window);
+        float mouse_x = sf::Mouse::getPosition(window).x;
+        float mouse_y = sf::Mouse::getPosition(window).y;
+        float dincreasex1 = increaseDensity.getPosition().x;
+        float dincreasey1 = increaseDensity.getPosition().y;
+        float dincreasex2 = increaseDensity.getSize().x;
+        float dincreasey2 = increaseDensity.getSize().x;
+        if ((mouse_x >= dincreasex1) and (mouse_x <= dincreasex2) and
+            (mouse_y >= dincreasey1) and (mouse_y <= dincreasey2)) {
+            increaseDensity.setFillColor(sf::Color::Blue);
+            cout<<"blue!"<<endl;
+        } else {
+            increaseDensity.setFillColor(sf::Color::Cyan);
+        }
+        if (sf::Mouse::isButtonPressed(sf::Mouse::Button::Left) && mouseposition.x > width-90 && mouseposition.x > width-50 && mouseposition.y > 10 && mouseposition.y < 50) {
+            cout<<"clicked"<<endl;
+        }
+        /*else if (sf::Mouse::isButtonPressed(sf::Mouse::Button::Left)){
+            cout<<"not clicked"<<endl;
+        }*/
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::S))
         {
             bally += 4;
@@ -175,7 +191,7 @@ int main() {
         }
         else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::A))
         {
-            cout<<getareaofcircle(ballradius, ybelow(bally, waterline))<<endl;
+            //cout<<getareaofcircle(ballradius, ybelow(bally, waterline))<<endl;
             ballvelocityy = 0;
         } else{bally -= ballvelocityy/1000;}
         if (ballvelocityy > 0) {
@@ -184,7 +200,7 @@ int main() {
             ballvelocityy += friction;
         }
         /////////////////////////////////////////////////////////////////////////////////////////////
-        
+
         //Drawings
         window.clear();
         window.draw(water);
@@ -195,7 +211,7 @@ int main() {
         window.draw(increaseDensity);
         window.draw(decreaseDensity);
         window.display();
-        
+
         /////////////////////////////////////////////////////////////////////////////////////////////
     }
 }
