@@ -149,7 +149,8 @@ int main() {
         }
 
         buoyancyForce = abs(densitywater*submergedArea*gravity);
-
+//MAIN GAME CONTROL
+/////////////////////////////////////////////////////////////////////////////////////////////
         if (auto event = window.pollEvent()) {
             if (event-> is<sf::Event::Closed>()) {
                 window.close();
@@ -182,7 +183,9 @@ int main() {
         } else {
             ballvelocityy += friction;
         }
-
+        /////////////////////////////////////////////////////////////////////////////////////////////
+        
+        //Drawings
         window.clear();
         window.draw(water);
         ball.setPosition({ballx, bally});
@@ -192,5 +195,7 @@ int main() {
         window.draw(increaseDensity);
         window.draw(decreaseDensity);
         window.display();
+        
+        /////////////////////////////////////////////////////////////////////////////////////////////
     }
-    }
+}
