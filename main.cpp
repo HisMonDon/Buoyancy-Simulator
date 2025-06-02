@@ -31,9 +31,36 @@ float getareaofcircle (float radius, float ybelow) {
     //integrate (y = root(900-x^2)) -> i got -1/3 *(r^2 - x^2)^3/2
     return integratecircle(radius, x2) - integratecircle(radius, x1);
 }
-
+class waterParticle {
+    public:
+    float lifetime = 0.f;
+    float size;
+    //status
+    bool alive = true;
+    float time = 0.f;
+    sf::Vector2f position;
+    sf::Vector2f velocity;
+    void Update(float const timechange, float gravity = 1.f, float resistance = 0.f) {
+        time += timechange;
+        if (time >= lifetime) {
+            alive = false;
+        }
+        position += velocity * timechange;
+        velocity.y += gravity * timechange;
+        velocity -= velocity * resistance * timechange;
+    }
+    void Draw(sf::RenderWindow& window, sf::CircleShape circle) {
+        float radius = size/2 * (1 - time / lifetime);
+        circle.setRadius (radius);
+        circle.setOrigin(circle.getGeometricCenter());
+        circle.setPosition(position);
+        circle.setFillColor(sf::Color(29, 112, 255));
+        window.draw(circle);
+    }
+};
 int main() {
     //Variables
+    unsigned int fps = 60;
     unsigned int width = 1400;
     unsigned int height = 800;
     //int x = 0;
@@ -57,11 +84,14 @@ int main() {
     int counter = 0;
     bool isMousePressed = false;
     sf::Vector2i offset;
-
+    int particle_amount = 500;
+    float size_particle = 4.f;
+    float max_lifetime_particle = 600;
+    float particle_resistance = 0.1f * fps;
     bool dragging = false;
     ///////////////////////////////////////////////////////////////
     sf::RenderWindow window(sf::VideoMode({width, height}), "Buoyancy simulator");
-    window.setFramerateLimit(80);
+    window.setFramerateLimit(fps);
     sf::CircleShape ball(ballradius);
     ball.setFillColor(sf::Color::Red);
     ball.setPosition({ballx, bally});
@@ -87,8 +117,9 @@ int main() {
     constantText.setFillColor(sf::Color::Cyan);
     constantText.setPosition({float(width) - 435, 10});
     //////////////////////////////////////////////////////////////////
+    sf::Clock clock;
     while (window.isOpen()) {
-
+        float timechange = clock.restart().asSeconds()
         counter ++;
         netForce = buoyancyForce + forceGravity;
         ballvelocityy += netForce/10;
