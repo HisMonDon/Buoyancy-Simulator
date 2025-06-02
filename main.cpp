@@ -9,6 +9,9 @@
 using namespace std;
 
 sf::Font arial("arial.ttf");
+int Random(int n1, int n2, int scale = 1) {
+    return n1+(rand() % (n2 - n1 + 1) * scale) / scale;
+}
 float ybelow(float bally, float waterline) {
     if (bally - waterline >= 0) {
         return bally-waterline;
@@ -84,15 +87,18 @@ int main() {
     int counter = 0;
     bool isMousePressed = false;
     sf::Vector2i offset;
-    int particle_amount = 500;
+    int particle_amount = 15;
     float size_particle = 4.f;
     float max_lifetime_particle = 600;
     float particle_resistance = 0.1f * fps;
     bool dragging = false;
+    sf::CircleShape circle;
+    std::vector<waterParticle> particles;
     ///////////////////////////////////////////////////////////////
     sf::RenderWindow window(sf::VideoMode({width, height}), "Buoyancy simulator");
     window.setFramerateLimit(fps);
     sf::CircleShape ball(ballradius);
+
     ball.setFillColor(sf::Color::Red);
     ball.setPosition({ballx, bally});
     //Draw shapes
@@ -119,7 +125,8 @@ int main() {
     //////////////////////////////////////////////////////////////////
     sf::Clock clock;
     while (window.isOpen()) {
-        float timechange = clock.restart().asSeconds()
+        float timechange = clock.restart().asSeconds();
+
         counter ++;
         netForce = buoyancyForce + forceGravity;
         ballvelocityy += netForce/10;
@@ -142,6 +149,17 @@ int main() {
 
 
         } else {
+            for (int x = 0; x < particle_amount; x++) {
+                float lifetime = Random(0, max_lifetime_particle, 100);
+                float velocity = Random(0, 600);
+                float angle = Random(0, 360);
+                waterParticle particle;
+                particle.size = size_particle;
+                particle.lifetime = lifetime;
+                particle.position = sf:: Vector2f(ballx, float(waterline));
+                particle.velocity = sf:: Vector2f(velocity, sf::degrees(angle));
+                particles.push_back(particle);
+            }
             submergedArea = (ballarea - (ballarea - integratecircle(ballradius, waterline - bally)))/100;
             text.setString("Submerged area: " + to_string(submergedArea) +
                            "\nBall Y: " + to_string(height - int(bally)) +
@@ -279,6 +297,9 @@ int main() {
         window.draw(constantText);
         window.draw(increaseDensity);
         window.draw(decreaseDensity);
+        for (waterParticle particle : particles) {
+            particle.Draw(window, circle);
+        }
         window.display();
 
         /////////////////////////////////////////////////////////////////////////////////////////////
