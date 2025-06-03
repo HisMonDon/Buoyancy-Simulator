@@ -43,25 +43,35 @@ class waterParticle {
     float time = 0.f;
     sf::Vector2f position;
     sf::Vector2f velocity;
-    void Update(float const timechange, float gravity = 1.f, float resistance = 0.f) {
+    void Update(float const timechange, float gravity = 4.f, float resistance = 0.f) {
         time += timechange;
         if (time >= lifetime) {
             alive = false;
         }
         position += velocity * timechange;
-        velocity.y += gravity * timechange;
+        velocity.y += gravity * timechange * 3;
         velocity -= velocity * resistance * timechange;
+        cout<<"accessed"<<endl;
     }
-    void Draw(sf::RenderWindow& window, sf::CircleShape circle) {
+    void Draw(sf::RenderWindow& window, sf::CircleShape circle, float waterline) {
+        if (position.y > waterline) {
+            return;
+        }
         float radius = size/2 * (1 - time / lifetime);
         circle.setRadius (radius);
         circle.setOrigin(circle.getGeometricCenter());
         circle.setPosition(position);
-        circle.setFillColor(sf::Color(29, 112, 255));
+        circle.setFillColor(sf::Color(29, 111, 163));
         window.draw(circle);
     }
 };
 int main() {
+    //shader
+    sf::Shader shader;
+
+    if (!shader.loadFromFile("/Users/ericlu/CLionProjects/BuoyancySimulator/cmake-build-debug/shaders/shader.frag", sf::Shader::Type::Fragment)) {
+        return 1;
+    }
     //Variables
     unsigned int fps = 60;
     unsigned int width = 1400;
@@ -87,13 +97,14 @@ int main() {
     int counter = 0;
     bool isMousePressed = false;
     sf::Vector2i offset;
-    int particle_amount = 15;
+    int particle_amount = 5;
     float size_particle = 4.f;
-    float max_lifetime_particle = 600;
-    float particle_resistance = 0.1f * fps;
+    float max_lifetime_particle = 6;
+    float particle_resistance = 0.1f * fps - 3;
     bool dragging = false;
     sf::CircleShape circle;
     std::vector<waterParticle> particles;
+
     ///////////////////////////////////////////////////////////////
     sf::RenderWindow window(sf::VideoMode({width, height}), "Buoyancy simulator");
     window.setFramerateLimit(fps);
@@ -105,8 +116,9 @@ int main() {
     sf::RectangleShape increaseDensity({float(40), float(40)});
     sf::RectangleShape decreaseDensity({float(40), float(40)});
     sf::RectangleShape water({float(1500), float(600)});
-    water.setFillColor(sf::Color::Blue);
+    water.setFillColor(sf::Color(76, 98, 228, 150));
     water.setPosition({0.0, float(waterline)});
+
     increaseDensity.setFillColor(sf::Color::Cyan);
     decreaseDensity.setFillColor(sf::Color::Cyan);
     increaseDensity.setPosition({float(width) - 70, 10});
@@ -124,7 +136,18 @@ int main() {
     constantText.setPosition({float(width) - 435, 10});
     //////////////////////////////////////////////////////////////////
     sf::Clock clock;
+    clock.restart();
+    sf::Clock shaderclock;
+    shaderclock.restart();
     while (window.isOpen()) {
+        //particle_amount = int(ballvelocityy)*10;
+        //shader
+        shader.setUniform("iTime", shaderclock.getElapsedTime().asSeconds());
+        shader.setUniform("iResolution", sf::Vector3f(
+            window.getSize().x,
+            window.getSize().y,
+            window.getSize().x / (float)window.getSize().y
+        ));
         float timechange = clock.restart().asSeconds();
 
         counter ++;
@@ -152,7 +175,7 @@ int main() {
             for (int x = 0; x < particle_amount; x++) {
                 float lifetime = Random(0, max_lifetime_particle, 100);
                 float velocity = Random(0, 600);
-                float angle = Random(0, 360);
+                float angle = Random(180, 360);
                 waterParticle particle;
                 particle.size = size_particle;
                 particle.lifetime = lifetime;
@@ -243,10 +266,12 @@ int main() {
             && mouse_y < ballx + ballradius && mouse_y > bally - ballradius) {
             ballx = mouse_x;
             bally = mouse_y;
+            window.setMouseCursorVisible(false);
             ball.setPosition({mouse_x, mouse_y});
             ball.setFillColor(sf::Color::Yellow);
         } else {
             ball.setFillColor(sf::Color::Red);
+            window.setMouseCursorVisible(true);
         }
         /*else if (sf::Mouse::isButtonPressed(sf::Mouse::Button::Left)){
             cout<<"not clicked"<<endl;
@@ -288,18 +313,37 @@ int main() {
             bally = height - 2*ballradius;
             cout<<"dam"<<endl;
         }
+        for (auto particle = particles.begin();  particle != particles.end();)
+        {
+            particle->Update(timechange, 200, particle_resistance);
+            if (not particle->alive)
+            {
+                // remove particle
+                particles.erase(particle);
+            }
+
+            else
+            {
+                // iterate to next particle
+                particle++;
+            }
+        }
         //Drawings
+        float time = shaderclock.getElapsedTime().asSeconds();
+        shader.setUniform("iTime", time);
         window.clear();
-        window.draw(water);
-        ball.setPosition({ballx, bally});
+        ball.setPosition({ballx - ballradius, bally});
         window.draw(ball);
+        for (waterParticle particle : particles) {
+            particle.Draw(window, circle, waterline);
+        }
+        //window.draw(water);
+        window.draw(water, &shader);
         window.draw(text);
         window.draw(constantText);
         window.draw(increaseDensity);
         window.draw(decreaseDensity);
-        for (waterParticle particle : particles) {
-            particle.Draw(window, circle);
-        }
+
         window.display();
 
         /////////////////////////////////////////////////////////////////////////////////////////////
