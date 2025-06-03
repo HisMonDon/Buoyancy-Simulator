@@ -68,8 +68,11 @@ class waterParticle {
 int main() {
     //shader
     sf::Shader shader;
-
-    if (!shader.loadFromFile("/Users/ericlu/CLionProjects/BuoyancySimulator/cmake-build-debug/shaders/shader.frag", sf::Shader::Type::Fragment)) {
+    sf::Shader ballshader;
+    if (!ballshader.loadFromFile("/Users/ericlu/CLionProjects/BuoyancySimulator/shaders/ball.frag", sf::Shader::Type::Fragment)) {
+        return 1;
+    }
+    if (!shader.loadFromFile("/Users/ericlu/CLionProjects/BuoyancySimulator/shaders/shader.frag", sf::Shader::Type::Fragment)) {
         return 1;
     }
     //Variables
@@ -115,6 +118,8 @@ int main() {
     //Draw shapes
     sf::RectangleShape increaseDensity({float(40), float(40)});
     sf::RectangleShape decreaseDensity({float(40), float(40)});
+    sf::RectangleShape shadedBall({80.f, 80.f});
+    shadedBall.setPosition({float(ballx), float(bally)});
     sf::RectangleShape water({float(1500), float(600)});
     water.setFillColor(sf::Color(76, 98, 228, 150));
     water.setPosition({0.0, float(waterline)});
@@ -144,6 +149,12 @@ int main() {
         //shader
         shader.setUniform("iTime", shaderclock.getElapsedTime().asSeconds());
         shader.setUniform("iResolution", sf::Vector3f(
+            window.getSize().x,
+            window.getSize().y,
+            window.getSize().x / (float)window.getSize().y
+        ));
+        ballshader.setUniform("iTime", shaderclock.getElapsedTime().asSeconds());
+        ballshader.setUniform("iResolution", sf::Vector3f(
             window.getSize().x,
             window.getSize().y,
             window.getSize().x / (float)window.getSize().y
@@ -331,14 +342,16 @@ int main() {
         //Drawings
         float time = shaderclock.getElapsedTime().asSeconds();
         shader.setUniform("iTime", time);
+        ballshader.setUniform("iTime", time);
         window.clear();
-        ball.setPosition({ballx - ballradius, bally});
         window.draw(ball);
         for (waterParticle particle : particles) {
             particle.Draw(window, circle, waterline);
         }
         //window.draw(water);
         window.draw(water, &shader);
+        ball.setPosition({ballx - ballradius, bally});
+        window.draw(ball, &ballshader);
         window.draw(text);
         window.draw(constantText);
         window.draw(increaseDensity);
